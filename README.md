@@ -1,73 +1,72 @@
-# React + TypeScript + Vite
+# Peninsula Documents — React + TypeScript (Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A small single-page app to browse documents and folders from mock data.
 
-Currently, two official plugins are available:
+## Implements (from the brief)
+- Show list with **Type / Name / Date added**
+- Indicate folders and make them **clickable**
+- **Open a folder** to see its contents (breadcrumb + Back)
+- **Sort** visible items by **name** or **date**
+- **Peninsula-style** colours
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## Getting started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Requirements:** Node 18+ (tested on Node 22) and npm
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Open the printed URL (e.g. http://localhost:5173).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Project structure
+
+```pgsql
+
+src/
+  App.tsx     # UI: breadcrumb/back, sort control, table
+  App.css     # basic styles for controls/table
+  data.ts     # mock data (Item[])
+  path.ts     # getItemsAtPath(ROOT, path): navigate into folders
+  types.ts    # FileItem | FolderItem | Item 
+  utils.ts    # sortItems(items, 'name' | 'date')  (if kept separate)
 ```
+
+## How it works (brief)
+
+- **Data model**
+
+```
+type FileItem   = { type: 'pdf'|'doc'|'csv'|'mov'; name: string; added: string };
+type FolderItem = { type: 'folder'; name: string; files: Item[] };
+type Item = FileItem | FolderItem;
+```
+
+- **Navigation:** `path: string[]` tracks where we are (e.g. `[]`, `['Expenses']`).
+`getItemsAtPath(ROOT, path)` walks folder names to return the items to show.
+
+- **Sorting:** `sortBy: 'name' | 'date'` + pure helper `sortItems(here, sortBy)`.
+Folders have no `added`, so in date mode they appear first. ISO date strings sort correctly via `localeCompare`.
+
+- **React loop:** *state → derive → render → user click → update state → re-render.*
+
+## Testing
+**Note:** Due to time, tests are **not included** in this submission.
+
+**If I had more time, I would add:**
+
+- Unit tests
+- One component test 
+
+
+## Next steps (given more time)
+
+- Filter: add filename search input
+
+
+# Notes
+I’m new to React + TypeScript. I referenced documentation/guidance to learn patterns and adapted them for this solution (styling, structure, and decisions are mine). 
