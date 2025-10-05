@@ -70,3 +70,6 @@ Folders have no `added`, so in date mode they appear first. ISO date strings sor
 
 # Notes
 I’m new to React + TypeScript. I referenced documentation/guidance to learn patterns and adapted them for this solution (styling, structure, and decisions are mine). 
+
+# Preview
+![](https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2Voc2FkaXBtaTI5YmN6YXZxZjg4ZG9zdGhnNnppY2IwdXk1dDNybyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/CmaPuE5B078jng6HKs/giphy.gif)
