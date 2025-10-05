@@ -3,13 +3,21 @@ import { useState } from 'react'; //state
 import { ROOT } from './data'; //mock data
 import type { Item } from './types'; //FileItem | FolderItem
 import { getItemsAtPath } from './path'; //function to find current folder and return folder items
+import { sortItems } from './utils';
 
-// holds path's state, renders breadcrumb and table and updates path when you click on a folder
+// holds path's state, renders breadcrumb back and table, updates path when you click on a folder and renders control for sorted list 
 export default function App() {
+  // where we are in the folder tree
   const [path, setPath] = useState<string[]>([]);
+  // items at the current location
   const here: Item[] = getItemsAtPath(ROOT, path);
+  // sort state + derived sorted list
+  const [sortBy, setSortBy] = useState<'name' | 'date'>('name');
+  const shown: Item[] = sortItems(here, sortBy);
+
   return (
     <div style={{ maxWidth: 800, margin: '3rem auto', fontFamily: 'system-ui, sans-serif' }}>
+      {/* --- App Heading --- */}
       <h1>Peninsula Documents</h1>
         {/* --- Breadcrumb / Back --- */}
       <div style={{ marginBottom: 12 }}>
@@ -38,6 +46,19 @@ export default function App() {
           </button>
         )}
       </div>
+      {/* Control: Sort dropdown */}
+      <div style={{ marginBottom: 8, display:'flex', alignItems:'center', gap:8, margin:'8px 0 10px' }}>
+        <label>
+          Sort by:&nbsp;
+          <select style={{ marginBottom: 8, padding:'6px 10px', border:'1px solid #d0d7de', borderRadius:8, background:'#fff' }}
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as 'name' | 'date')}
+          >
+            <option value="name">Name</option>
+            <option value="date">Date</option>
+          </select>
+        </label>
+      </div>
       <table style={{ width: '100%', borderRadius: '0.5em', borderCollapse: 'collapse', backgroundColor: '#edf4ff' }}>
         <thead>
           {/* --- Table Headings--- */}
@@ -48,11 +69,12 @@ export default function App() {
           </tr>
         </thead>
         <tbody>
-          {here.map((it) => (
+          {shown.map((it) => (
             <tr
-              key={it.name}
+              key={[...path, it.name].join('/')}
               onClick={() => it.type === 'folder' && setPath([...path, it.name])}
               style={{
+                borderBottom: '1px solid #f3f3f3',
                 cursor: it.type === 'folder' ? 'pointer' : 'default',
               }}
             >
@@ -64,7 +86,7 @@ export default function App() {
           ))}
         </tbody>
       </table>
-      {here.length === 0 && <p>No items here.</p>}
+      {shown.length === 0 && <p>No items here.</p>}
     </div>
   );
 }
